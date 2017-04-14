@@ -3,6 +3,11 @@ module Main exposing (..)
 import Html exposing (Html)
 
 
+-- Abstraction
+
+import Utils
+
+
 -- Components
 
 import Component
@@ -31,13 +36,16 @@ type alias Model =
     }
 
 
+updateCounter : Component.Model -> Model -> Model
+updateCounter counterModel model =
+    { model | counter = counterModel }
+
+
 init : ( Model, Cmd Msg )
 init =
-    let
-        ( cModel, cmd ) =
-            Component.init Even
-    in
-        ( Model cModel False, cmd )
+    Component.init Even
+        |> Utils.initSubComponent
+            (\subModel -> { counter = subModel, even = False })
 
 
 
@@ -53,15 +61,10 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         CounterMsg subMsg ->
-            let
-                ( cModel, cmd ) =
-                    Component.update Even subMsg model.counter
-            in
-                { model
-                    | counter = cModel
-                    , even = False
-                }
-                    ! [ cmd ]
+            Component.update Even subMsg model.counter
+                |> Utils.updateSubComponent
+                    updateCounter
+                    { model | even = False }
 
         Even ->
             ( { model | even = True }, Cmd.none )

@@ -62,7 +62,7 @@ view msg model =
     Html.map msg <|
         Html.div
             []
-            [ Html.button [ Html.Events.onClick Increment ] [ Html.text "+" ]
+            [ Html.button [ Html.Events.onClick Decrement ] [ Html.text "-" ]
             , Html.text <| toString model
-            , Html.button [ Html.Events.onClick Decrement ] [ Html.text "-" ]
+            , Html.button [ Html.Events.onClick Increment ] [ Html.text "+" ]
             ]
