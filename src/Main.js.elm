@@ -10,16 +10,16 @@ import Utils exposing (Component)
 
 -- Components
 
-import Component
+import Counter
 
 
-counter : Component Model Component.Model Msg Component.Msg
+counter : Component Model Counter.Model Msg Counter.Msg
 counter =
     Utils.component
         { model = \subModel model -> { model | counter = subModel }
-        , update = \subMsg model -> Component.update Even subMsg model.counter
-        , init = Component.init Even
-        , view = \model -> Component.view CounterMsg model.counter
+        , update = \subMsg model -> Counter.update Even subMsg model.counter
+        , init = Counter.init Even
+        , view = \model -> Counter.view CounterMsg model.counter
         , subscriptions = \_ -> Sub.none
         }
 
@@ -51,13 +51,8 @@ main =
 
 type alias Model =
     { even : Bool
-    , counter : Component.Model
+    , counter : Counter.Model
     }
-
-
-updateCounter : Component.Model -> Model -> Model
-updateCounter counterModel model =
-    { model | counter = counterModel }
 
 
 init : ( Model, Cmd Msg )
@@ -71,7 +66,7 @@ init =
 
 
 type Msg
-    = CounterMsg Component.Msg
+    = CounterMsg Counter.Msg
     | Even
 
 

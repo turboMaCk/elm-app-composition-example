@@ -1,4 +1,4 @@
-module Component exposing (..)
+module Counter exposing (..)
 
 import Html exposing (Html)
 import Html.Events
