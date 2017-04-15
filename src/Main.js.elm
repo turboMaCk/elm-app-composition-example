@@ -5,7 +5,7 @@ import Html exposing (Html)
 
 -- Abstraction
 
-import Utils
+import Utils exposing (Component)
 
 
 -- Components
@@ -13,7 +13,24 @@ import Utils
 import Component
 
 
+counter : Component Model Component.Model Msg Component.Msg
+counter =
+    Utils.component
+        { model = \subModel model -> { model | counter = subModel }
+        , update = \subMsg model -> Component.update Even subMsg model.counter
+        , init = Component.init Even
+        , view = \model -> Component.view CounterMsg model.counter
+        , subscriptions = \_ -> Sub.none
+        }
+
+
+
 -- Main
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
 
 
 main : Program Never Model Msg
@@ -22,7 +39,9 @@ main =
         { init = init
         , update = update
         , view = view
-        , subscriptions = \_ -> Sub.none
+        , subscriptions =
+            subscriptions
+                |> Utils.subscriptions counter
         }
 
 
@@ -31,8 +50,8 @@ main =
 
 
 type alias Model =
-    { counter : Component.Model
-    , even : Bool
+    { even : Bool
+    , counter : Component.Model
     }
 
 
@@ -43,9 +62,8 @@ updateCounter counterModel model =
 
 init : ( Model, Cmd Msg )
 init =
-    Component.init Even
-        |> Utils.initSubComponent
-            (\subModel -> { counter = subModel, even = False })
+    ( Model False, Cmd.none )
+        |> Utils.init counter
 
 
 
@@ -61,10 +79,8 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         CounterMsg subMsg ->
-            Component.update Even subMsg model.counter
-                |> Utils.updateSubComponent
-                    updateCounter
-                    { model | even = False }
+            ( { model | even = False }, Cmd.none )
+                |> Utils.update counter subMsg
 
         Even ->
             ( { model | even = True }, Cmd.none )
@@ -77,7 +93,7 @@ update msg model =
 view : Model -> Html Msg
 view model =
     Html.div []
-        [ Component.view CounterMsg model.counter
+        [ Utils.view counter model
         , if model.even then
             Html.text "is even"
           else
